@@ -1,16 +1,20 @@
 import os
 import re
-from selenium import webdriver  
-from selenium.webdriver.common.keys import Keys  
-from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
 
-chrome_options = Options()  
-chrome_options.add_argument("--headless")
+options = webdriver.ChromeOptions()
+options.add_argument('--headless')
+driver = webdriver.Chrome('C:\Program Files\ChromeDriver\chromedriver.exe', chrome_options=options)
+driver.get('http://wwlorey.x10host.com/quote_of_the_day.html')
 
-driver = webdriver.Chrome('C:\Program Files\ChromeDriver\chromedriver.exe')
-driver.get("http://wwlorey.x10host.com/quote_of_the_day.html")
+match = re.search("Today's\sQuote(</b><br />|</b><br/>|<br/>)[\n\r\s]([\w\s]+\S).*\n.*_blank\">(.+)</a>", driver.page_source)
 
-page_text = driver.page_source
-print(page_text)
+try:
+  if match is None:
+    raise Exception
+except Exception:
+  print(':-(')
+else:
+  print(match.group(2), match.group(3))
 
 driver.close()
