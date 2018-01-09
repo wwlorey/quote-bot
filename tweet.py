@@ -17,7 +17,7 @@ def getTwitterAPI():
   auth.set_access_token(cred.ACCESS_KEY, cred.ACCESS_SECRET)
   return tweepy.API(auth)
 
-# Sends an email from the address outlined in credentials.py to the provided address (TO_ADDR)
+# Sends an email from the address outlined in credentials.py to the provided address (toAddr)
 #  w/ provided subject and body fields
 # return: None
 def sendEmail(subject, body, toAddr):
@@ -37,12 +37,16 @@ def sendEmail(subject, body, toAddr):
   s.sendmail(cred.FROM_ADDR, [toAddr], msg.as_string())
   s.quit()
 
-options = webdriver.ChromeOptions()
-options.add_argument('--headless')
-driver = webdriver.Chrome('C:\Program Files\ChromeDriver\chromedriver.exe', chrome_options=options)
+# Creates Chrome connection
+# return: Chrome webdriver object
+def getBrowserConnection():
+  options = webdriver.ChromeOptions()
+  options.add_argument('--headless')
+  return webdriver.Chrome('C:\Program Files\ChromeDriver\chromedriver.exe', chrome_options=options)
 
 # Scrape quote and tweet it out every 24 hours
 while True:
+  driver = getBrowserConnection()
   driver.get('http://wwlorey.x10host.com/quote_of_the_day.html')
 
   match = re.search("Today's\sQuote(</b><br />|</b><br/>|<br/>)[\n\r\s]([\w\s]+\S).*\n.*_blank\">(.+)</a>", driver.page_source)
@@ -59,4 +63,5 @@ while True:
     api = getTwitterAPI()
     api.update_status('"%s" - %s' % (quote, author))
 
+  driver.close()
   time.sleep(SECONDS_IN_DAY) 
