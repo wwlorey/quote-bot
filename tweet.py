@@ -5,18 +5,21 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 # Variables
-ambigSubject = 'ERROR | Twitter Bot v0r0'
-ambigBody = 'Error in quote extraction or source connection :(' 
-toAddr = 'wwlorey@gmail.com'
+SUBJECT = 'ERROR | Twitter Bot v0r0'
+BODY = 'Error in quote extraction or source connection :(' 
+TO_ADDR = 'wwlorey@gmail.com'
 SECONDS_IN_DAY = 24 * 60 * 60
 
-
-# return: twitter API object authenticated with quote_bot_ credentials
+# Creates twitter connection w/ credentials outlined in credentials.py
+# return: twitter API object
 def getTwitterAPI():
   auth = tweepy.OAuthHandler(cred.CONSUMER_KEY, cred.CONSUMER_SECRET)
   auth.set_access_token(cred.ACCESS_KEY, cred.ACCESS_SECRET)
   return tweepy.API(auth)
 
+# Sends an email from the address outlined in credentials.py to the provided address (TO_ADDR)
+#  w/ provided subject and body fields
+# return: None
 def sendEmail(subject, body, toAddr):
   msg = MIMEMultipart('alternative')
 
@@ -38,7 +41,7 @@ options = webdriver.ChromeOptions()
 options.add_argument('--headless')
 driver = webdriver.Chrome('C:\Program Files\ChromeDriver\chromedriver.exe', chrome_options=options)
 
-
+# Scrape quote and tweet it out every 24 hours
 while True:
   driver.get('http://wwlorey.x10host.com/quote_of_the_day.html')
 
@@ -48,7 +51,7 @@ while True:
     if match is None:
       raise Exception
   except Exception:
-    sendEmail(ambigSubject, ambigBody, toAddr)
+    sendEmail(SUBJECT, BODY, TO_ADDR)
   else:
     quote = match.group(2)
     author = match.group(3)
