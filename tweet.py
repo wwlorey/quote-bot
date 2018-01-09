@@ -1,6 +1,4 @@
-import os
-import re
-import smtplib
+import os, re, smtplib, tweepy, time, sis
 import credentials as cred
 from selenium import webdriver
 from email.mime.multipart import MIMEMultipart
@@ -15,16 +13,16 @@ def sendEmail(subject, body, toAddr):
 
   # Message parameters
   msg['Subject'] = subject
-  msg['From'] = cred.fromAddr
+  msg['From'] = cred.FROM_ADDR
   msg['To'] = toAddr
 
   # Message body
   msg.attach(MIMEText(body, 'plain'))
 
   s = smtplib.SMTP_SSL('smtp.gmail.com')
-  s.login(cred.fromAddr, cred.password)
+  s.login(cred.FROM_ADDR, cred.PASSWORD)
 
-  s.sendmail(cred.fromAddr, [toAddr], msg.as_string())
+  s.sendmail(cred.FROM_ADDR, [toAddr], msg.as_string())
   s.quit()
 
 options = webdriver.ChromeOptions()
