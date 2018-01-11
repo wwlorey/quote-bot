@@ -59,9 +59,26 @@ while True:
   else:
     quote = match.group(2)
     author = match.group(3)
+    quoteStr = '"%s" - %s' % (quote, author) 
 
-    api = getTwitterAPI()
-    api.update_status('"%s" - %s' % (quote, author))
+    prevTweet = open('prev_tweet.txt', 'r')
+
+    line = prevTweet.readline()
+    if str(line) == quoteStr:
+      print("Quote was already tweeted.")
+      pass
+    else:
+      print("Tweeting new quote...")
+      prevTweet.close()
+      prevTweet = open('prev_tweet.txt', 'w') # Clear the file
+      prevTweet.write(quoteStr)
+
+      api = getTwitterAPI()
+      api.update_status(quoteStr)
+      print("Quote has been tweeted.")
+
+    prevTweet.close()
 
   driver.close()
+  print("\nWaiting for 24 hours...\n")
   time.sleep(SECONDS_IN_DAY) 
