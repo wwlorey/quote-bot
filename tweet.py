@@ -47,18 +47,20 @@ def getBrowserConnection():
 # Scrape quote and tweet it out every 24 hours
 while True:
   driver = getBrowserConnection()
-  driver.get('http://wwlorey.x10host.com/quote_of_the_day.html')
+  driver.get('https://www.brainyquote.com/link/quotebr.js')
 
-  match = re.search("Today's\sQuote(</b><br />|</b><br/>|<br/>)[\n\r\s]([\w\s]+\S).*\n.*_blank\">(.+)</a>", driver.page_source)
+  match = re.search("br.writeln\(\"([^&].*)&lt.*\n.*&gt;([^\"].*)&lt", driver.page_source)
 
   try:
     if match is None:
       raise Exception
   except Exception:
+    print("An error has ocurred. Sending email notice...")
     sendEmail(SUBJECT, BODY, TO_ADDR)
+    print("Email sent.")
   else:
-    quote = match.group(2)
-    author = match.group(3)
+    quote = match.group(1)
+    author = match.group(2)
     quoteStr = '"%s" - %s' % (quote, author) 
 
     prevTweet = open('prev_tweet.txt', 'r')
@@ -66,7 +68,6 @@ while True:
     line = prevTweet.readline()
     if str(line) == quoteStr:
       print("Quote was already tweeted.")
-      pass
     else:
       print("Tweeting new quote...")
       prevTweet.close()
